@@ -22,15 +22,23 @@ Line & Line::operator=(const Line & line) {
 // Note: Check than A and B are not too close!
 
 void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
-
+	Vector3 v;
+	m_O = A;
+	float epsilon =10e-6;
+	Vector3 C=B-A;
+	if(C.length()<epsilon){
+		v=B-A;
+		m_d=v.normalize();
+	}else{
+		m_d=Vector3(0 ,0 ,0 );
+		printf("Estas usando el mismo punto dos veces para hacer una recta");
+	}
 }
 
 // @@ TODO: Give the point corresponding to parameter u
 
 Vector3 Line::at(float u) const {
-	Vector3 res;
-
-	return res;
+	return m_O +u*m_d;
 }
 
 // @@ TODO: Calculate the parameter 'u0' of the line point nearest to P
@@ -38,8 +46,9 @@ Vector3 Line::at(float u) const {
 // u0 = m_d*(P-m_o) / m_d*m_d , where * == dot product
 
 float Line::paramDistance(const Vector3 & P) const {
-	float res = 0.0f;
-
+	float dv = m_d.dot(P-m_O);
+	float db = m_d.dot(m_d);
+	float res = dv/db;
 	return res;
 }
 
@@ -49,7 +58,10 @@ float Line::paramDistance(const Vector3 & P) const {
 // Where u0 = paramDistance(P)
 
 float Line::distance(const Vector3 & P) const {
-	float res = 0.0f;
+	float u0= paramDistance(P);
+	Vector3 dist;
+	dist=P-(m_O + u0*m_d);
+	float res = dist.length();
 
 	return res;
 }
