@@ -5,8 +5,8 @@
 
 /* | algo           | difficulty | */
 /* |----------------+------------| */
-/* | BSPherePlane   |          1 | */
-/* | BBoxBBox       |          2 | */
+/* | BBoxBBox       |          1 | */
+/* | BSPherePlane   |          2 | */
 /* | BBoxPlane      |          4 | */
 
 // @@ TODO: test if a BSpheres intersects a plane.
@@ -17,6 +17,7 @@
 
 int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 
+return 0;
 }
 
 
@@ -26,7 +27,24 @@ int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
 //    IREJECT don't intersect
 
 int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
-
+//para la proyeccion en x comprobar si intersectan o no
+// si no intersectan, salimos.Si intersectan, comprobamos la proyeccion en y
+//recomendacion hacer tres tres ifs diferentes y si no sucede ninguno sacamos al final que no sucede
+// if(x)
+	if(bba->m_min[0]>bbb->m_max[0] || bbb->m_min[0]> bba->m_max[0]){
+		return IREJECT;
+	}else{
+		if(bba->m_min[1]>bbb->m_max[1] || bbb->m_min[1]> bba->m_max[1]){
+			return IREJECT;
+		}else{
+			if (bba->m_min[2]>bbb->m_max[2] || bbb->m_min[2]> bba->m_max[2]){
+				return IREJECT;
+			}else{
+				return IINTERSECT;
+			}
+			
+		}
+	}
 }
 
 // @@ TODO: test if a BBox and a plane intersect.
@@ -36,7 +54,7 @@ int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 //    IINTERSECT intersect
 
 int  BBoxPlaneIntersect (const BBox *theBBox, Plane *thePlane) {
-
+return 0;
 }
 
 // Test if two BSpheres intersect.

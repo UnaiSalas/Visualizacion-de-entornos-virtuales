@@ -24,13 +24,12 @@ Line & Line::operator=(const Line & line) {
 void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
 	Vector3 v;
 	m_O = A;
-	float epsilon =10e-6;
+	float epsilon =1.0e-8;
 	Vector3 C=B-A;
-	if(C.length()<epsilon){
-		v=B-A;
-		m_d=v.normalize();
+	if(C.length()>epsilon){
+		m_d=C.normalize();
 	}else{
-		m_d=Vector3(0 ,0 ,0 );
+		m_d=Vector3(0 ,0 ,0);
 		printf("Estas usando el mismo punto dos veces para hacer una recta");
 	}
 }
