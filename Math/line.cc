@@ -8,6 +8,7 @@
 Line::Line() : m_O(Vector3::ZERO), m_d(Vector3::UNIT_Y) {}
 Line::Line(const Vector3 & o, const Vector3 & d) : m_O(o), m_d(d) {}
 Line::Line(const Line & line) : m_O(line.m_O), m_d(line.m_d) {}
+float epsilon =1.0e-8;
 
 Line & Line::operator=(const Line & line) {
 	if (&line != this) {
@@ -24,7 +25,6 @@ Line & Line::operator=(const Line & line) {
 void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
 	Vector3 v;
 	m_O = A;
-	float epsilon =1.0e-8;
 	Vector3 C=B-A;
 	if(C.length()>epsilon){
 		m_d=C.normalize();
@@ -47,8 +47,14 @@ Vector3 Line::at(float u) const {
 float Line::paramDistance(const Vector3 & P) const {
 	float dv = m_d.dot(P-m_O);
 	float db = m_d.dot(m_d);
-	float res = dv/db;
-	return res;
+	if(db>epsilon){
+		float res = dv/db;
+		return res;
+	}else{
+		printf("El dividendo es 0\n");
+		return 0.0;
+	}
+	
 }
 
 // @@ TODO: Calculate the minimum distance 'dist' from line to P
