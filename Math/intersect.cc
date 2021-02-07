@@ -16,8 +16,17 @@
 //    IINTERSECT intersect
 
 int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
-
-return 0;
+	float dist = pl->distance(bs->m_centre);
+	if (dist<=bs->m_radius){
+		return IINTERSECT;
+	}else{
+		int pos = pl->whichSide(bs->m_centre);
+		if(pos==1){
+			return +IREJECT;
+		}else if(pos==-1){
+			return -IREJECT;
+		}
+	}
 }
 
 
@@ -52,9 +61,20 @@ int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 //   +IREJECT outside
 //   -IREJECT inside
 //    IINTERSECT intersect
-
+//    https://gdbooks.gitbooks.io/3dcollisions/content/Chapter2/static_aabb_plane.html
 int  BBoxPlaneIntersect (const BBox *theBBox, Plane *thePlane) {
-return 0;
+	// obtenemos el centro del BB
+Vector3 centro = (theBBox->m_max+theBBox->m_min)*0.5f;
+Vector3 extendido = theBBox->m_max - centro;
+float proyeccion = extendido[0]*abs(thePlane->m_n[0]) + extendido[1]*abs(thePlane->m_n[1]) + extendido[2]*abs(thePlane->m_n[2]);
+float distancia = thePlane->m_n.dot(centro) - thePlane->m_d;
+if(abs(distancia)<=proyeccion){
+	return IINTERSECT;
+}else if(thePlane->whichSide(centro)==1){
+	return +IREJECT;
+}else if(thePlane->whichSide(centro)==-1){
+	return -IREJECT;
+}
 }
 
 // Test if two BSpheres intersect.
