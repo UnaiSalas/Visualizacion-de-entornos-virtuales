@@ -16,7 +16,7 @@ Camera::Camera() :
 	m_E(Vector3::ZERO),
 	m_R(Vector3::UNIT_X),
 	m_U(Vector3::UNIT_Y),
-	m_D(-1.0f*Vector3::UNIT_Z) {
+	m_D(Vector3::UNIT_Z) {
 	savePosition();
 	for(int i = 0; i < MAX_CLIP_PLANES; ++i)
 		m_fPlanes[i] = new Plane();
