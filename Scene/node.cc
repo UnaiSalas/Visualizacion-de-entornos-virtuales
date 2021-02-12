@@ -273,12 +273,17 @@ Node * Node::cycleChild(size_t idx) {
 // Add a child to node
 // Print a warning (and do nothing) if node already has an gObject.
 
+// se mete el hijo en la lista de hijos y con el puntero al padre señalas al padre
 void Node::addChild(Node *theChild) {
 
 	if (theChild == 0) return;
 	if (m_gObject) {
 		// node has a gObject, so print warning
+		printf("ESTAS METIENDO UN NODO HIJO EN UN NODO HOJA");
 	} else {
+		// usar push_back
+		m_children.push_back(theChild);
+		theChild->m_parent=this;
 		// node does not have gObject, so attach child
 	}
 }
@@ -385,6 +390,7 @@ void Node::updateGS() {
 // Note:
 //    See Recipe 1 in for knowing how to iterate through children.
 
+// HAcerlo en profundidad para dibujar los objetos
 void Node::draw() {
 
 	ShaderProgram *prev_shader = 0;
@@ -402,9 +408,23 @@ void Node::draw() {
 	if(rs->getBBoxDraw() || m_drawBBox)
 		BBoxGL::draw( m_containerWC );
 
-	/* =================== PUT YOUR CODE HERE ====================== */
-
-	/* =================== END YOUR CODE HERE ====================== */
+	// 1 Guardar en la pila de transformaciones
+	//RenderState-> Tiene todo lo que esta en la escena
+	rs->push(RenderState::modelview); 
+	rs->addTrfm(RenderState::modelview, m_placement); 
+	//si el objeto es hoja
+	if(m_gObject){
+	// 	dibujar el objeto geometrico de este nodo
+		m_gObject->draw();
+	}else{
+	// dibujar los hijos	
+		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end(); it != end; ++it) {
+			Node *theChild = *it;
+			theChild->draw();
+		}
+	}
+	// 5 Desempilar la matriz de trasnsformaciones
+	rs->pop(RenderState::modelview);
 
 	if (prev_shader != 0) {
 		// restore shader
