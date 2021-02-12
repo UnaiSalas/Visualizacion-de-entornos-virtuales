@@ -194,9 +194,16 @@ void Trfm3D::clone( const Trfm3D *T ) {	clone(*T); }
 // @@ TODO. Transform a point.
 //
 // IMPORTANT NOTE: suppose that m_w == 1
+/*     | c1.x*s  c2.x*s  c3.x*s tr.x | */
+/* M = | c1.y*s  c2.y*s  c3.y*s tr.y | */
+/*     | c1.z*s  c2.z*s  c3.z*s tr.z | */
+/*     |   d.x     d.y     d.z   w   | */
 
 Vector3 Trfm3D::transformPoint(const Vector3 & P) const {
 	Vector3 res;
+	res[0]=m_c1[0]*m_scl*P[0]+m_c2[0]*m_scl*P[1]+m_c3[0]*m_scl*P[2]+m_tr[0];
+	res[1]=m_c1[1]*m_scl*P[0]+m_c2[1]*m_scl*P[1]+m_c3[1]*m_scl*P[2]+m_tr[1];
+	res[2]=m_c1[2]*m_scl*P[0]+m_c2[2]*m_scl*P[1]+m_c3[2]*m_scl*P[2]+m_tr[2];
 
 	return res;
 }
@@ -209,7 +216,9 @@ Vector3 Trfm3D::transformPoint(const Vector3 & P) const {
 
 Vector3 Trfm3D::transformVector(const Vector3 & V) const {
 	Vector3 res;
-
+	res[0]=m_c1[0]*m_scl*V[0]+m_c2[0]*m_scl*V[1]+m_c3[0]*m_scl*V[2];
+	res[1]=m_c1[1]*m_scl*V[0]+m_c2[1]*m_scl*V[1]+m_c3[1]*m_scl*V[2];
+	res[2]=m_c1[2]*m_scl*V[0]+m_c2[2]*m_scl*V[1]+m_c3[2]*m_scl*V[2];
 	return res;
 }
 
@@ -397,7 +406,13 @@ void Trfm3D::setScale(float scale ) {
 //
 
 void Trfm3D::setRotAxis(const Vector3 & V, const Vector3 & P, float angle ) {
-
+	// Hay que hacer las operacion en el modo de operacion aplicado en las ingenierias y no el post usado en el mundo de graficos, por el modo de operar del motor(?)
+	// Hacemos el set de la primera operacion y despues el resto de operaciones las añadimos con un add
+	setTrans(P);
+	// Añadimos la rotacion
+	addRotVec(V,angle);
+	// Añadimos la ultima transformacion
+	addTrans(P*-1);
 }
 
 
