@@ -16,10 +16,13 @@
 //    IINTERSECT intersect
 
 int BSpherePlaneIntersect(const BSphere *bs, Plane *pl) {
+	//calculamos la distancia entre el centro de la esfera y el plano 
 	float dist = pl->distance(bs->m_centre);
+	// si la distancia es menor que el radio de la esfera, entonces intersecta
 	if (dist<=bs->m_radius){
 		return IINTERSECT;
 	}else{
+		// si no intersecta miraremos en que lado del plano esta la esfera
 		int pos = pl->whichSide(bs->m_centre);
 		if(pos==1){
 			return +IREJECT;
@@ -65,9 +68,14 @@ int  BBoxBBoxIntersect(const BBox *bba, const BBox *bbb ) {
 int  BBoxPlaneIntersect (const BBox *theBBox, Plane *thePlane) {
 	// obtenemos el centro del BB
 Vector3 centro = (theBBox->m_max+theBBox->m_min)*0.5f;
+	// calculamos las extensiones positivas
 Vector3 extendido = theBBox->m_max - centro;
+	// ccalculamos la proyeccion del radio del BB 
 float proyeccion = extendido[0]*abs(thePlane->m_n[0]) + extendido[1]*abs(thePlane->m_n[1]) + extendido[2]*abs(thePlane->m_n[2]);
+	// calculamos la distancia entre el centro del BB y el plano
 float distancia = thePlane->m_n.dot(centro) - thePlane->m_d;
+	// si la distancia es menor a la proyeccion, intersectan.
+	// si eso no sucede, miramos a que lado del planose encuentra el BB
 if(abs(distancia)<=proyeccion){
 	return IINTERSECT;
 }else if(thePlane->whichSide(centro)==1){

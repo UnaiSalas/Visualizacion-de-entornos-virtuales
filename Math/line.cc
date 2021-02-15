@@ -26,6 +26,8 @@ void Line::setFromAtoB(const Vector3 & A, const Vector3 & B) {
 	Vector3 v;
 	m_O = A;
 	Vector3 C=B-A;
+	// si la distancia entre ambos puntos es menor que epsilon (igual a 0), estaremos usando los mismos puntos para crear la recta y sino sera el vector director
+	// del vector resultante entre ambos puntos
 	if(C.length()>epsilon){
 		m_d=C.normalize();
 	}else{
@@ -43,7 +45,6 @@ Vector3 Line::at(float u) const {
 // @@ TODO: Calculate the parameter 'u0' of the line point nearest to P
 //
 // u0 = m_d*(P-m_o) / m_d*m_d , where * == dot product
-
 float Line::paramDistance(const Vector3 & P) const {
 	float dv = m_d.dot(P-m_O);
 	float db = m_d.dot(m_d);
