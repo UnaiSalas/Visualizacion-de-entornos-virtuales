@@ -17,7 +17,7 @@ using std::map;
 //        Node *theChild = *it;
 //        theChild->print(); // or any other thing
 //    }
-
+// 
 // Recipe 2: iterate through children inside a const method
 //
 //    for(list<Node *>::const_iterator it = m_children.begin(), end = m_children.end();
@@ -286,6 +286,8 @@ void Node::addChild(Node *theChild) {
 		theChild->m_parent=this;
 		// node does not have gObject, so attach child
 	}
+	updateGS();
+	// hacemos llamada a updateWC();
 }
 
 void Node::detach() {
@@ -338,6 +340,10 @@ void Node::propagateBBRoot() {
 // Note:
 //    See Recipe 1 in for knowing how to iterate through children.
 
+//Actualizar BB del nodo en el que esta y llama a la funcion con el nodo padre.
+// Para cuando ha llegado al nodo raiz
+
+
 void Node::updateBB () {
 
 }
@@ -358,8 +364,31 @@ void Node::updateBB () {
 //    See Recipe 1 in for knowing how to iterate through children.
 
 void Node::updateWC() {
+	//Lectura del arbol de abajo a arriba, empezando en el nodo raiz
+	//Las transformaciones locales y las del mundo son iguales
+	if(this->m_parent==0){
+		m_placementWC->clone(m_placement);
+	}else{
+		m_placementWC->clone(this->m_parent->m_placementWC);
+		m_placementWC->add(m_placement);
+	}
+		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();
+	it != end; ++it) {
+		Node *theChild = *it;
+		theChild->updateWC();
+	}
 
 }
+	//si es el nodo raiz{
+	//	(Las transformaciones locales son las globales)
+	//	m_placementWC.clone(m_placement); Hacemos una clonacion de m_placement y nos aseguramos de hacer una copia de m_placement y si lo hicieramos m_placementWC=m_placement solo estariamos haciendo una copia del puntero
+	//	}y sino{
+	//		la trasnsformacion global es la transformacion global del padre por la transformacion local
+	//		m_placementWC <- theParent-> m_placementWC compuesto con m_placement
+	//		si tiene hijos{
+	//			llamar recursivamente a la funcion updateWC()
+	//		
+	//}
 
 // @@ TODO:
 //
@@ -370,7 +399,8 @@ void Node::updateWC() {
 // - Propagate Bounding Box to root (propagateBBRoot), starting from the parent, if parent exists.
 
 void Node::updateGS() {
-
+	updateWC();
+	//propagateBBRoot();
 }
 
 
@@ -410,23 +440,27 @@ void Node::draw() {
 
 	// 1 Guardar en la pila de transformaciones
 	//RenderState-> Tiene todo lo que esta en la escena
-	rs->push(RenderState::modelview); 
-	rs->addTrfm(RenderState::modelview, m_placement); 
+	//rs->push(RenderState::modelview); 
+	//rs->addTrfm(RenderState::modelview, m_placement); 
 	//si el objeto es hoja
 	if(m_gObject){
 	// 	dibujar el objeto geometrico de este nodo
+	//	Encolamos y hacemos las transformaciones solo con los nodos hojas, tenemos que eliminar los dos de arriba
+		rs->push(RenderState::modelview); 
+		rs->addTrfm(RenderState::modelview, m_placementWC); 
 		m_gObject->draw();
+		rs->pop(RenderState::modelview);
 	}else{
-	// dibujar los hijos	
+	// dibujar los hijos
 		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end(); it != end; ++it) {
 			Node *theChild = *it;
 			theChild->draw();
 		}
 	}
 	// 5 Desempilar la matriz de trasnsformaciones
-	rs->pop(RenderState::modelview);
+	// rs->pop(RenderState::modelview);
 
-	if (prev_shader != 0) {
+	if(prev_shader != 0) {
 		// restore shader
 		rs->setShader(prev_shader);
 	}
