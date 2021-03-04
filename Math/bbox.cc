@@ -13,7 +13,7 @@ BBox::~BBox() {
 		glDeleteBuffers(1, &m_idxvbo_id);
 }
 
-BBox::BBox() : m_min(Vector3::MAX), m_max(Vector3::MIN), m_vbo_id(0), m_idxvbo_id(0), m_vbo_uptodate (0) {}
+BBox::BBox() : m_min(Vector3::MAX), m_max(-1*Vector3::MAX), m_vbo_id(0), m_idxvbo_id(0), m_vbo_uptodate (0) {}
 
 BBox::BBox(const Vector3 & min, const Vector3 & max) : m_min(min), m_max(max) {
 	m_vbo_id = 0;
@@ -48,6 +48,7 @@ void BBox::add(const Vector3 & P) {
 	m_max[2] = fmax(m_max[2], P[2]);
 	m_vbo_uptodate = 0;
 }
+
 
 void BBox::include(const BBox *bbb ) {
 	add(bbb->m_min);
