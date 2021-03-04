@@ -285,9 +285,9 @@ void Node::addChild(Node *theChild) {
 		m_children.push_back(theChild);
 		theChild->m_parent=this;
 		// node does not have gObject, so attach child
+		updateGS();	
+		// hacemos llamada a updateWC();	
 	}
-	updateGS();
-	// hacemos llamada a updateWC();
 }
 
 void Node::detach() {
@@ -312,6 +312,16 @@ void Node::detach() {
 //    - placementWC of node and parents are up-to-date
 
 void Node::propagateBBRoot() {
+
+// - update the BBox of the node (updateBB)
+	updateBB();
+// - Propagate BBox to parent until root is reached
+	if (m_parent) 
+		m_parent->propagateBBRoot();
+
+	/// !m_parent similar a (m_parent == 0) === No tiene padre === es el nodo raiz
+
+	/// if (m_gObject) === es un nodo hoja OJO CUANDO PREGUNTES SOBRE M_CHILDREN.SIZE() == 0
 
 }
 
@@ -345,6 +355,43 @@ void Node::propagateBBRoot() {
 
 
 void Node::updateBB () {
+		// si es nodo hoja, tiene un objeto geometrico
+		// bbox <- bbox(objeto_geometrico) transformado con la transformacion GLOBAL de este nodo
+
+		// bb = m_gObject->getContainer()
+		// bb->transform(m_placementWC)
+
+		// bbox <= T(bbox(objeto_geometrico))
+
+		// void clone(const BBox * source): Copy from source bounding box
+		// const BBox *getContainer(); //!< Get bounding box of GObject ESTA EN GEOMETRY/GOBJECT.
+		// void transform(const Trfm3D * T): Transform BBox by applying transformation T
+	if(m_gObject){
+		m_containerWC->clone(m_gObject->getContainer());
+		m_containerWC->transform(m_placementWC);
+	}else{
+		// si es nodo intermedio, bbox  <=  union del bbox de los hijos
+
+		// INICIALIZAR EL BBOX
+		//    void init(): Set BBox to be the void (empty) BBox
+		m_containerWC->init();
+		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();
+		it != end; ++it) {
+			Node *theChild = *it;
+			m_containerWC->include(theChild->m_containerWC);
+			// HACER INCLUDE del bbox del hijo
+			// no es una funcion recursiva
+			//    void include(BBox *B): Change BBox so that it also includes BBox B
+
+		}
+	}
+
+
+		///////////////////////////////
+
+
+
+
 
 }
 
@@ -366,19 +413,29 @@ void Node::updateBB () {
 void Node::updateWC() {
 	//Lectura del arbol de abajo a arriba, empezando en el nodo raiz
 	//Las transformaciones locales y las del mundo son iguales
-	if(this->m_parent==0){
+	if(this->m_parent == 0){
+		// NO HAY PADRE... ESTOY EN EL NODO RAIZ
 		m_placementWC->clone(m_placement);
 	}else{
+		// ES UN NODO INTERMEDIO U HOJA
+		// T_wc <= padre->T_wc * T_local
 		m_placementWC->clone(this->m_parent->m_placementWC);
 		m_placementWC->add(m_placement);
 	}
-		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();
+	/// Si es un nodo intermedio, se haran llamadas recursivas para sus hijos
+	/// Si es un nodo hoja, no entra en el for y sale
+	for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();
 	it != end; ++it) {
 		Node *theChild = *it;
 		theChild->updateWC();
 	}
 
+	//  - update Bounding Box to world coordinates
+	updateBB();
+
 }
+
+
 	//si es el nodo raiz{
 	//	(Las transformaciones locales son las globales)
 	//	m_placementWC.clone(m_placement); Hacemos una clonacion de m_placement y nos aseguramos de hacer una copia de m_placement y si lo hicieramos m_placementWC=m_placement solo estariamos haciendo una copia del puntero
@@ -400,7 +457,12 @@ void Node::updateWC() {
 
 void Node::updateGS() {
 	updateWC();
-	//propagateBBRoot();
+	// starting from the parent (OJO... DESDE SU PADRE)
+	if(m_parent){
+		m_parent->propagateBBRoot();
+	}
+	// HAY QUE VER SI TIENE PADRE... Y SI LO TIENE HACEMOS:
+	// 		m_parent->propagateBBRoot();
 }
 
 
@@ -443,6 +505,7 @@ void Node::draw() {
 	//rs->push(RenderState::modelview); 
 	//rs->addTrfm(RenderState::modelview, m_placement); 
 	//si el objeto es hoja
+
 	if(m_gObject){
 	// 	dibujar el objeto geometrico de este nodo
 	//	Encolamos y hacemos las transformaciones solo con los nodos hojas, tenemos que eliminar los dos de arriba
