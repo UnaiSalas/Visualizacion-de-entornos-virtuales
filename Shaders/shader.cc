@@ -281,6 +281,10 @@ void ShaderProgram::beforeDraw() {
 			send_uniform("campos", cam->getPosition());
 		}
 	}
+	if(this->has_capability("sc")){
+		//Estoy dando el valor de la variable uniforme en beforeDraw
+		this->send_uniform("sc", rs->getSc());
+	}
 }
 
 void ShaderProgram::print() const {

@@ -201,6 +201,9 @@ public:
 
 	void print() const;
 
+	float getSc() const;
+	void setSc(float v); 
+
 private:
 	RenderState();
 	~RenderState();
@@ -241,4 +244,6 @@ private:
 	// SkyBox
 
 	Node *m_skybox;
+
+	float m_sc;
 };

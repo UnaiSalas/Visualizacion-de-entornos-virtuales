@@ -562,6 +562,8 @@ void idle(void) {
 }
 
 void animate(int value) {
+	static float t=0.0;
+	float inc_t;
 	// Set up the next timer tick (do this first)
 	glutTimerFunc(MG_TIMERMSECS, animate, 0);
 
@@ -573,7 +575,14 @@ void animate(int value) {
 	// ##### REPLACE WITH YOUR OWN GAME/APP MAIN CODE HERE #####
 	if (runAnimation) {
 		// Force a redisplay to render the new image
+		if (t<1.0){
+			inc_t=-0.01;
+		}else{
+			inc_t=0.01;
+		}
+		t=t+inc_t;
 
+		RenderState::instance()->setSc(t);
 		glutPostRedisplay();
 	}
 	// ##### END OF GAME/APP MAIN CODE #####
@@ -604,10 +613,10 @@ int main(int argc, char** argv) {
 		InitLight();
 		InitShaders();
 		// Change the line below for different scenes
-		displayNode = create_scene();
+		// displayNode = create_scene();
 		// Other possible scenes:
 		//
-		// displayNode = create_scene_city();
+		displayNode = create_scene_city();
 	}
 
 	Scene::instance()->attach(displayNode);
