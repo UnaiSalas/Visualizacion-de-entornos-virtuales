@@ -144,7 +144,7 @@ void PerspectiveCamera::updateProjection() {
 	/* =================== PUT YOUR CODE HERE ====================== */
 
 	/// ESTA EN LAS TRASPARENCIAS
-	float top = m_near*tan(m_fovy/2);
+	float top = m_near*tanf(m_fovy/2);
 	float bottom = -1*top;
 	float right = m_aspectRatio*top;
 	float left = -1*right;
@@ -170,7 +170,7 @@ void Camera::setViewTrfm() {
 	m_viewTrfm->setWorld2Local(m_E, m_R, m_U, m_D);
 	updateFrustumPlanes();
 }
-
+cd 
 
 void Camera::updateFrame () {
 	setViewTrfm();
@@ -197,8 +197,8 @@ void  Camera::lookAt(const Vector3 & E,
 	/* =================== END YOUR CODE HERE ====================== */
 	Vector3 F = E - at;
 	Vector3 newup = up.normalize();
-	F.normalize();
-	m_D=F;
+	
+	m_D=F.normalize();
 	m_R=newup.cross(m_D);
 	m_U=m_D.cross(m_R);
 	m_E=E;
