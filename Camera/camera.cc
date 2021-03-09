@@ -143,6 +143,21 @@ void OrthographicCamera::updateProjection() {
 void PerspectiveCamera::updateProjection() {
 	/* =================== PUT YOUR CODE HERE ====================== */
 
+	/// ESTA EN LAS TRASPARENCIAS
+	float top = m_near*tan(m_fovy/2);
+	float bottom = -1*top;
+	float right = m_aspectRatio*top;
+	float left = -1*right;
+
+	m_projTrfm->setFrustum(left, right, bottom, top, m_near, m_far);
+	// Ver en trfm3D.cc setFrustum()
+
+//	void Trfm3D::setFrustum(float left, float right,
+//						float bottom, float top,
+//						float near, float far)
+
+	//m_projTrfm.setFrustum(...)
+
 	/* =================== END YOUR CODE HERE ====================== */
 	updateFrustumPlanes();
 }
@@ -173,9 +188,23 @@ void  Camera::lookAt(const Vector3 & E,
 					 const Vector3 & up) {
 	/* =================== PUT YOUR CODE HERE ====================== */
 
+	// Ver lookAt en trasparencias
+
+	/// Hay que conseguir RUD y adaptar m_E (guardar E)
+	/// m_R, m_D y m_U
+	/// v.normalize(), v.cross(v1)
+
 	/* =================== END YOUR CODE HERE ====================== */
+	Vector3 F = E - at;
+	Vector3 newup = up.normalize();
+	F.normalize();
+	m_D=F;
+	m_R=newup.cross(m_D);
+	m_U=m_D.cross(m_R);
+	m_E=E;
 	setViewTrfm();
 }
+
 
 ////////////////////////////////////////////////////////////7
 // get/set

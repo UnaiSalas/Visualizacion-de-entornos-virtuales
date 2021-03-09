@@ -281,7 +281,7 @@ void Node::addChild(Node *theChild) {
 		// node has a gObject, so print warning
 		printf("ESTAS METIENDO UN NODO HIJO EN UN NODO HOJA");
 	} else {
-		// usar push_back
+		// usar push_back para meter el hijo en la lista de hijos
 		m_children.push_back(theChild);
 		theChild->m_parent=this;
 		// node does not have gObject, so attach child

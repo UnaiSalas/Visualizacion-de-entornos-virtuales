@@ -71,12 +71,12 @@ Vector3 centro = (theBBox->m_max+theBBox->m_min)*0.5f;
 	// calculamos las extensiones positivas
 Vector3 extendido = theBBox->m_max - centro;
 	// ccalculamos la proyeccion del radio del BB 
-float proyeccion = extendido[0]*abs(thePlane->m_n[0]) + extendido[1]*abs(thePlane->m_n[1]) + extendido[2]*abs(thePlane->m_n[2]);
+float proyeccion = extendido[0]*fabs(thePlane->m_n[0]) + extendido[1]*fabs(thePlane->m_n[1]) + extendido[2]*fabs(thePlane->m_n[2]);
 	// calculamos la distancia entre el centro del BB y el plano
 float distancia = thePlane->m_n.dot(centro) - thePlane->m_d;
 	// si la distancia es menor a la proyeccion, intersectan.
 	// si eso no sucede, miramos a que lado del planose encuentra el BB
-if(abs(distancia)<=proyeccion){
+if(fabs(distancia)<=proyeccion){
 	return IINTERSECT;
 }else if(thePlane->whichSide(centro)==1){
 	return +IREJECT;
