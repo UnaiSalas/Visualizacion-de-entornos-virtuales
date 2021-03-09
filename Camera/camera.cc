@@ -170,7 +170,7 @@ void Camera::setViewTrfm() {
 	m_viewTrfm->setWorld2Local(m_E, m_R, m_U, m_D);
 	updateFrustumPlanes();
 }
-cd 
+
 
 void Camera::updateFrame () {
 	setViewTrfm();
