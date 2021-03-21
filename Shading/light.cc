@@ -89,6 +89,23 @@ void Light::placeScene() {
 	Trfm3D &modelView = rs->top(RenderState::modelview);
 
 	/* =================== PUT YOUR CODE HERE ====================== */
+	
+	if(m_type == directional){
+		// direccionales (como el sol)
+		// porque m_position es un VECTOR
+		m_positionEye = modelView.transformVector(m_position);
+		m_positionEye = m_positionEye.normalize();
+		// hay que hacer mas cosas para luces posicionales (bombilla) y
+		// de tipo spotlight (flexo)
+	}else{
+		m_positionEye=modelView.transformPoint(m_position);
+
+		if(m_type ==spotlight){
+			m_spotDirectionEye =modelView.transformVector(m_spotDirection);
+			m_spotDirectionEye = m_spotDirectionEye.normalize();
+		}
+	}
+
 
 	/* =================== END YOUR CODE HERE ====================== */
 }
