@@ -57,8 +57,6 @@ float specular_factor(in vec3 n,in vec3 l, in vec3 v, in float m){
 	// sino devuelvo 0.0 //es mate (tipo de material)
 
 
-
-	
 }
 void luz_direccional (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 color_difuso, inout vec3 color_especular){
 	
@@ -74,8 +72,24 @@ void luz_direccional (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 colo
 		color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL;
 	}
 }
+
+void luz_posicional (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 color_difuso, inout vec3 color_especular, in float att){
+	//Componente difusa
+	float NoL = factor_lambert(N,L);
+	// si la irradiancia es mayor que 0.0
+	if(NoL > epsilon){
+		color_difuso += theLights[i].diffuse * theMaterial.diffuse * NoL * att;
+
+		//Componente especular
+		float f_specular = specular_factor(N, L, V, theMaterial.shininess);
+
+		color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL * att;
+	}
+}
 void main() {
 	float factor = 0.0;
+	float d_posicional=0.0;
+	float att=0.0;
 	vec3 L, N, V, color_especular;
 	vec4 L4, N4, positionEye, V4;
 
@@ -99,6 +113,8 @@ void main() {
 	// N es el vector normal en el vertice (en el espacio de la camara)
 	// normalEye en las traspas
 
+	//calculo de l
+		
 
 	for (int i=0; i<active_lights_n;i++){
 		if (theLights[i].position[3] == 0.0) {
@@ -106,9 +122,16 @@ void main() {
 			L=normalize(L4.xyz);
 			luz_direccional(i, L, N, V, color_difuso, color_especular);
 			//color_difuso=vec3(0.0,1.0,0.0);
-		}// else{
-			// color_difuso=vec3(1.0,0.0,0.0);
-		// }
+		}else{
+			L4= theLights[i].position - positionEye;
+			d_posicional=length(L4); //distancia desde el punto del foco al positionEye
+			L=normalize(L4.xyz);
+			att=theLights[i].attenuation[0]+theLights[i].attenuation[1]*d_posicional+theLights[i].attenuation[2]*d_posicional*d_posicional;
+			if(att>epsilon){
+				att=1/att;
+				luz_posicional(i, L, N, V, color_difuso, color_especular, att);
+			}
+		}
 
 	}
 
