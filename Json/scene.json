@@ -76,7 +76,7 @@
             "name" : "mainlight",
             "type" : "positional",
             "pos" : [-10.0, -4.0, -100.0],
-            "dif" : [0.5, 0.5, 0.5],
+            "dif" : [0.7, 0.7, 0.7],
             "spec" : [0.6, 0.6, 0.6],
             "attenuation" : [0.0, 0.2, 0.0],
             "switched" : 0
@@ -85,7 +85,7 @@
             "name" : "dirlight",
             "type" : "directional",
             "pos" : [-1, -1, -1],
-            "dif" : [1.0, 0.0, 0.0],
+            "dif" : [1.0, 1.0, 1.0],
             "spec" : [0.6, 0.6, 0.6],
             "switched" : 1
         },
@@ -93,7 +93,7 @@
             "name" : "dirlight2",
             "type" : "directional",
             "pos" : [1, 1, 1],
-            "dif" : [0.0, 0.0, 1.0],
+            "dif" : [0.4, 0.2, 0.7],
             "spec" : [0.6, 0.6, 0.6],
             "switched" : 0
         },
