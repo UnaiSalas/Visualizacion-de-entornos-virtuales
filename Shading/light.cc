@@ -98,8 +98,9 @@ void Light::placeScene() {
 		// hay que hacer mas cosas para luces posicionales (bombilla) y
 		// de tipo spotlight (flexo)
 	}else{
+		// si es posicional o de spotlight
 		m_positionEye=modelView.transformPoint(m_position);
-
+		// si es spotlight 
 		if(m_type ==spotlight){
 			m_spotDirectionEye =modelView.transformVector(m_spotDirection);
 			m_spotDirectionEye = m_spotDirectionEye.normalize();

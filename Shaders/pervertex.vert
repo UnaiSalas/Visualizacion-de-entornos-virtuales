@@ -72,7 +72,35 @@ void luz_direccional (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 colo
 		color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL;
 	}
 }
+void luz_spot (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 color_difuso, inout vec3 color_especular){
+ 	vec3 dir_foco = theLights[i].spotDir;
 
+	// cSpot como el factor de intensidad del foco
+	float fac_int = max(dot(-L, dir_foco), 0.0);
+
+	float cSpot = 0.0;
+
+	//Componente difusa
+	float NoL = factor_lambert(N,L);
+
+	// si el angulo es mayor que 0 y esta dentro del angulo del foco, modificamos el factor
+	if(fac_int>=theLights[i].cosCutOff){
+		if(fac_int>epsilon){
+			cSpot = pow(fac_int, theLights[i].exponent);
+		}
+
+
+		if(cSpot>epsilon){
+			color_difuso += theLights[i].diffuse * theMaterial.diffuse * NoL * cSpot;
+
+			//Componente especular
+			float f_specular = specular_factor(N, L, V, theMaterial.shininess);
+
+			color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL * cSpot;
+		}
+	}
+
+}
 void luz_posicional (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 color_difuso, inout vec3 color_especular, in float att){
 	//Componente difusa
 	float NoL = factor_lambert(N,L);
@@ -86,6 +114,7 @@ void luz_posicional (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 color
 		color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL * att;
 	}
 }
+
 void main() {
 	float factor = 0.0;
 	float d_posicional=0.0;
@@ -126,11 +155,16 @@ void main() {
 			L4= theLights[i].position - positionEye;
 			d_posicional=length(L4); //distancia desde el punto del foco al positionEye
 			L=normalize(L4.xyz);
-			att=theLights[i].attenuation[0]+theLights[i].attenuation[1]*d_posicional+theLights[i].attenuation[2]*d_posicional*d_posicional;
-			if(att>epsilon){
-				att=1/att;
-				luz_posicional(i, L, N, V, color_difuso, color_especular, att);
-			}
+			if(theLights[i].cosCutOff>0.0){
+				luz_spot(i, L, N, V, color_difuso, color_especular);
+			}else{
+				att=theLights[i].attenuation[0]+theLights[i].attenuation[1]*d_posicional+theLights[i].attenuation[2]*d_posicional*d_posicional;
+				if(att>epsilon){
+					att=1/att;
+					luz_posicional(i, L, N, V, color_difuso, color_especular, att);
+					}
+				}
+
 		}
 
 	}
