@@ -544,7 +544,19 @@ void Node::setCulled(bool culled) {
 //          update m_isCulled accordingly.
 
 void Node::frustumCull(Camera *cam) {
-
+	int frustum = cam->checkFrustum(m_containerWC, 0);
+	if(frustum==1) {	// fuera del frustrum
+		m_isCulled=true;
+	}else if(frustum==0){	//si el BB intersecta al frustrum y llamamos al frustrumCull con los hijos y la camara que nos pasa por parametro (como es la unica camara que he visto y como me imagino que solo trabajaremos con una camara)
+		m_isCulled=false;
+		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();
+			it != end; ++it) {
+			Node *theChild = *it;
+			theChild->frustumCull(cam);
+			}
+	}else{			//esta dentro del frustrum
+		m_isCulled=false;
+	}
 }
 
 // @@ TODO: Check whether a BSphere (in world coordinates) intersects with a

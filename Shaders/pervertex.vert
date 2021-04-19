@@ -73,32 +73,35 @@ void luz_direccional (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 colo
 	}
 }
 void luz_spot (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 color_difuso, inout vec3 color_especular){
- 	vec3 dir_foco = theLights[i].spotDir;
+ 	vec3 dir_foco = normalize(theLights[i].spotDir);
+
+	
+	float fac_int = dot(-L, dir_foco);
 
 	// cSpot como el factor de intensidad del foco
-	float fac_int = max(dot(-L, dir_foco), 0.0);
-
 	float cSpot = 0.0;
 
 	//Componente difusa
 	float NoL = factor_lambert(N,L);
+	if(NoL>epsilon){
+		// si el angulo es mayor que 0 y esta dentro del angulo del foco, modificamos el factor
+		if(fac_int>=theLights[i].cosCutOff){
+			if(fac_int>epsilon){
+				cSpot = pow(fac_int, theLights[i].exponent);
+			}
 
-	// si el angulo es mayor que 0 y esta dentro del angulo del foco, modificamos el factor
-	if(fac_int>=theLights[i].cosCutOff){
-		if(fac_int>epsilon){
-			cSpot = pow(fac_int, theLights[i].exponent);
-		}
 
+			if(cSpot>epsilon){
+				color_difuso += theLights[i].diffuse * theMaterial.diffuse * NoL * cSpot;
 
-		if(cSpot>epsilon){
-			color_difuso += theLights[i].diffuse * theMaterial.diffuse * NoL * cSpot;
+				//Componente especular
+				float f_specular = specular_factor(N, L, V, theMaterial.shininess);
 
-			//Componente especular
-			float f_specular = specular_factor(N, L, V, theMaterial.shininess);
-
-			color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL * cSpot;
+				color_especular += theLights[i].specular * theMaterial.specular * f_specular * NoL * cSpot;
+			}
 		}
 	}
+
 
 }
 void luz_posicional (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 color_difuso, inout vec3 color_especular, in float att){
@@ -155,9 +158,9 @@ void main() {
 			L4= theLights[i].position - positionEye;
 			d_posicional=length(L4); //distancia desde el punto del foco al positionEye
 			L=normalize(L4.xyz);
-			if(theLights[i].cosCutOff>0.0){
+			if(theLights[i].cosCutOff>0.0){ 									//spotlight
 				luz_spot(i, L, N, V, color_difuso, color_especular);
-			}else{
+			}else{ 																//posicional
 				att=theLights[i].attenuation[0]+theLights[i].attenuation[1]*d_posicional+theLights[i].attenuation[2]*d_posicional*d_posicional;
 				if(att>epsilon){
 					att=1/att;
@@ -169,7 +172,7 @@ void main() {
 
 	}
 
-	f_color = vec4(color_difuso + color_especular, 1.0);
+	f_color = vec4(scene_ambient +color_difuso + color_especular, 1.0);
 	f_texCoord = v_texCoord;
 
 	gl_Position = modelToClipMatrix * vec4(v_position, 1);

@@ -327,9 +327,16 @@ void  Camera::arcLeftRight(float angle) {
 
 int Camera::checkFrustum(const BBox *theBBox,
 						 unsigned int *planesBitM) {
-
-	return -1; // BBox is fully inside the frustum
+	int inter;
+	int res=-1;
+	for(int i=0; i< MAX_CLIP_PLANES; i++){
+		inter = BBoxPlaneIntersect(theBBox, m_fPlanes[i]); // Frustum planes. A 6 elements of type plane. Order: (l,r,b,t,n,f) // Note: normals point outside the frustum.
+		if(inter==+IREJECT) return 1; //fuera
+		if(inter==IINTERSECT) res= 0; //intersecta
+	}
+	return res; // dentro
 }
+// variable a 0, si 6 esta dentro y sino intersecta
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Hemendik aurrera ez
