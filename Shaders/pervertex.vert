@@ -175,6 +175,6 @@ void main() {
 	f_color = vec4(scene_ambient +color_difuso + color_especular, 1.0);
 	f_texCoord = v_texCoord;
 
-	gl_Position = modelToClipMatrix * vec4(v_position, 1);
+	gl_Position = modelToClipMatrix * vec4(v_position, 1.0);
 }
 
