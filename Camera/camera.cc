@@ -331,8 +331,8 @@ int Camera::checkFrustum(const BBox *theBBox,
 	int res=-1;
 	for(int i=0; i< MAX_CLIP_PLANES; i++){
 		inter = BBoxPlaneIntersect(theBBox, m_fPlanes[i]); // Frustum planes. A 6 elements of type plane. Order: (l,r,b,t,n,f) // Note: normals point outside the frustum.
-		if(inter==+IREJECT) return 1; //fuera
-		if(inter==IINTERSECT) res= 0; //intersecta
+		if(inter==+IREJECT){ return 1;} //fuera
+		if(inter==IINTERSECT){ res= 0;} //intersecta
 	}
 	return res; // dentro
 }

@@ -546,7 +546,7 @@ void Node::setCulled(bool culled) {
 void Node::frustumCull(Camera *cam) {
 	int frustum = cam->checkFrustum(m_containerWC, 0);
 	if(frustum==1) {	// fuera del frustrum
-		m_isCulled=true;
+		this->setCulled(true);
 	}else if(frustum==0){	//si el BB intersecta al frustrum y llamamos al frustrumCull con los hijos y la camara que nos pasa por parametro (como es la unica camara que he visto y como me imagino que solo trabajaremos con una camara)
 		m_isCulled=false;
 		for(list<Node *>::iterator it = m_children.begin(), end = m_children.end();
@@ -555,7 +555,7 @@ void Node::frustumCull(Camera *cam) {
 			theChild->frustumCull(cam);
 			}
 	}else{			//esta dentro del frustrum
-		m_isCulled=false;
+		this->setCulled(false);
 	}
 }
 
@@ -571,7 +571,44 @@ void Node::frustumCull(Camera *cam) {
 
 const Node *Node::checkCollision(const BSphere *bsph) const {
 	if (!m_checkCollision) return 0;
+	
+	const Node *resN;
+
+	//llamada a interseccion entre la esfera del avatar y el BB
+	//int res = BSphereBBoxIntersect(bsph, m_containerWC);
+
+	//si intersectan ambos comprobamos si es nodo hoja y sino comprobaremos con los hijos
+	if(BSphereBBoxIntersect(bsph, m_containerWC) == IINTERSECT){
+		//comprobamos si es nodo hoja
+		if(m_gObject){
+			return this;
+		}else{
+		//si no es nodo hoja, pasará a mirar los hijos porque es un nodo intermedio
+			for(list<Node *>::const_iterator it = m_children.begin(), end = m_children.end();
+				it != end; ++it) {
+				const Node *theChild = *it;
+				resN = theChild->checkCollision(bsph); // or any other thing
+				if(resN){
+					return theChild;
+				}
+			}
+			return 0;
+		}
+	}else{
+		//si no choca finalmente devolveremos 0
+		return 0;
+	}
+	
+}
+	// si es nodo hoja
+	//    devuelve this
+	// sino
+	//    si no choca devolvemos 0
+	//    diferenciar entre nodos hoja y nodos intermedios
+	//    si es intermedio, funcion recursiva con los hijos
+	//    si choca devolvemos el hijo(?)
+	//
 	/* =================== PUT YOUR CODE HERE ====================== */
 
 	/* =================== END YOUR CODE HERE ====================== */
-}
+

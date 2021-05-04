@@ -39,15 +39,34 @@ bool Avatar::getWalkorFly() const {
 //
 // Return: true if the avatar moved, false if not.
 
+//llamará a una funcion en Nodo (checkCollision)
 bool Avatar::advance(float step) {
-
+	bool res = true;
 	Node *rootNode = Scene::instance()->rootNode();
 	if (m_walk)
 		m_cam->walk(step);
 	else
 		m_cam->fly(step);
-	return true;
+
+	m_bsph->setPosition(m_cam->getPosition()); //la posicion de la esfera que representa la camara tiene que tener su misma posicion
+	if(rootNode->checkCollision(m_bsph) != 0){
+		if (m_walk){
+			m_cam->walk(-step);
+		}else{
+			m_cam->fly(-step);
+		}
+		m_bsph->setPosition(m_cam->getPosition());
+		res=false;
+	}
+	return res;
 }
+// si te mueves hay que actualizar el BB del avatar con el step que des
+// si distinto de 0 entonces hace
+//     si m_walk step adelante y step hacia atras
+//     sino en modo fly y hacia adelante y luego hacia atras
+// si es 0 avanzas normal
+
+
 
 void Avatar::leftRight(float angle) {
 	if (m_walk)
