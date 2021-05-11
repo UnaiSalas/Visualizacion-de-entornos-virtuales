@@ -64,6 +64,28 @@ void CreateSkybox(GObject *gobj,
 	}
 	/* =================== PUT YOUR CODE HERE ====================== */
 
+	//create a new material with name matName (has to be unique).
+	Material *mat = MaterialManager::instance()->create("material");
+
+	//Assign cubemap texture to material.
+	mat->Material::setTexture(ctex);
+
+	//Assign material to geometry object gobj
+	gobj->GObject::setMaterial(mat);
+
+	//Create a new Node.
+	Node *nodo = NodeManager::instance()->create("Nodo");
+
+	//attach shader to node.
+	nodo->Node::attachShader(skyshader);
+
+	//Assign geometry object to node.
+	nodo->Node::attachGobject(gobj);
+
+	//Set sky node in RenderState.
+	RenderState::instance()->setSkybox(nodo);
+
+	
 	/* =================== END YOUR CODE HERE ====================== */
 }
 
@@ -104,6 +126,45 @@ void DisplaySky(Camera *cam) {
 	if (!skynode) return;
 
 	/* =================== PUT YOUR CODE HERE ====================== */
+	
+
+	ShaderProgram *prev_shader = rs->getShader();
+
+	rs->push(RenderState::modelview);
+
+
+	Trfm3D *localT = new Trfm3D();
+
+	//Move Skybox to camera location, so that it always surrounds camera.
+	localT->setTrans(cam->getPosition());
+	rs->addTrfm(RenderState::modelview,localT);
+
+	//Disable depth test
+	glDisable(GL_DEPTH_TEST);
+
+	ShaderProgram *sky_shader = skynode->getShader();
+
+	//Set skybox shader
+	if(!sky_shader){
+		fprintf(stderr, "[E] DisplaySky: el cielo no tiene shader");
+		exit(1);
+	}
+	rs->setShader(sky_shader);
+
+	//Draw skybox object
+	GObject *skyboxobj = skynode->getGobject();
+	skyboxobj->draw();
+
+	rs->pop(RenderState::modelview);
+
+	//Restore depth test
+	glEnable(GL_DEPTH_TEST);
+
+	//Set previous shader
+	//if(prev_shader != 0){
+	rs->setShader(prev_shader);
+	//}
+
 
 	/* =================== END YOUR CODE HERE ====================== */
 }
