@@ -128,7 +128,7 @@ void main() {
 	vec4 L4, color, texel;
 
 	// Normal del vertice en el sistema de coordenadas del mundo
-	nw = normalize(f_normal);
+	nw = normalize(f_normalw);
 
 	//campos -> posicion de la camara en el sistema de coordenadas del mundo
 	//f_positionw -> posicion del vertice en el sistema de coordenadas del mundo
@@ -186,8 +186,9 @@ void main() {
 
 	}
 
-	color = vec4(scene_ambient +color_difuso + color_especular, 1.0);
-	color = color * texel;
+
 	texColor = texture2D(texture0, f_texCoord);
-	gl_FragColor=color*texColor; //color * textura
+	vec4 mezcla = mix(texColor, texel, 0.8);
+
+	gl_FragColor = vec4(scene_ambient + color_difuso, 1.0) * mezcla + vec4(color_especular, theMaterial.alpha); //color * textura
 }

@@ -510,7 +510,10 @@ void Node::draw() {
 	// 	dibujar el objeto geometrico de este nodo
 	//	Encolamos y hacemos las transformaciones solo con los nodos hojas, tenemos que eliminar los dos de arriba
 		rs->push(RenderState::modelview); 
-		rs->addTrfm(RenderState::modelview, m_placementWC); 
+		rs->addTrfm(RenderState::modelview, m_placementWC);
+
+		// Set model matrix
+		rs->loadTrfm(RenderState::model, m_placementWC);
 		m_gObject->draw();
 		rs->pop(RenderState::modelview);
 	}else{
