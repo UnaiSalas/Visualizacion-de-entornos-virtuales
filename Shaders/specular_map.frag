@@ -1,5 +1,11 @@
 #version 120
 
+
+// DOCUMENTACION SOBRE LA IMPLEMENTACION OPCIONAL
+// LAS INFORMACIÓN PARA PODER REALIZAR ESTA IMPLEMENTACIÓN OPCIONAL SE OBTUVO A TRAVES DE EL DOCUMENTO FACILITADO EN EGELA EN EL QUE SE DESCRIBE LA PRACTICA
+// Y SE COMPLEMENTO CON ALGUNAS DUDAS PUNTUALES SOBRE SU FUNCIONAMIENTO QUE FUERON RESUELTAS POR LA PROFESORA.
+
+
 uniform int active_lights_n; // Number of active lights (< MG_MAX_LIGHT)
 uniform vec3 scene_ambient; // Scene ambient light
 
@@ -70,7 +76,7 @@ void luz_direccional (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 colo
 		//Componente especular
 		float f_specular = specular_factor(N, L, V, theMaterial.shininess);
 
-		color_especular += theLights[i].specular * spec_map * f_specular * NoL;
+		color_especular += theLights[i].specular * spec_map * f_specular * NoL; //SUSTITUIMOS THEMATERIAL.SPECULAR POR LA INFORMACION DEL MAPA ESPECULAR (SPEC_MAP)
 	}
 }
 void luz_spot (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 color_difuso, inout vec3 color_especular){
@@ -98,7 +104,7 @@ void luz_spot (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 color_difus
 				//Componente especular
 				float f_specular = specular_factor(N, L, V, theMaterial.shininess);
 
-				color_especular += theLights[i].specular * spec_map * f_specular * NoL * cSpot;
+				color_especular += theLights[i].specular * spec_map * f_specular * NoL * cSpot; //SUSTITUIMOS THEMATERIAL.SPECULAR POR LA INFORMACION DEL MAPA ESPECULAR (SPEC_MAP)
 			}
 		}
 	}
@@ -115,7 +121,7 @@ void luz_posicional (in int i, in vec3 L, in vec3 N, in vec3 V, inout vec3 color
 		//Componente especular
 		float f_specular = specular_factor(N, L, V, theMaterial.shininess);
 
-		color_especular += theLights[i].specular * spec_map * f_specular * NoL * att;
+		color_especular += theLights[i].specular * spec_map * f_specular * NoL * att; //SUSTITUIMOS THEMATERIAL.SPECULAR POR LA INFORMACION DEL MAPA ESPECULAR (SPEC_MAP)
 	}
 }
 
@@ -172,4 +178,6 @@ void main() {
 	color = vec4(scene_ambient +color_difuso + color_especular, 1.0);
 	texColor = texture2D(texture0, f_texCoord);
 	gl_FragColor=color*texColor; //color * textura
+
+
 }

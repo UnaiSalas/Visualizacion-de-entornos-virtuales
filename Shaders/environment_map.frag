@@ -1,5 +1,15 @@
 #version 120
 
+
+// DOCUMENTACION SOBRE LA IMPLEMENTACION OPCIONAL
+// LAS INFORMACIÓN PARA PODER REALIZAR ESTA SECCIÓN DEL OBJETIVO OPCIONAL SE OBTUVO A TRAVES DE EL DOCUMENTO FACILITADO EN EGELA EN EL QUE SE DESCRIBE LA PRACTICA.
+// POR OTRA PARTE, SE REALIZÓ UNA TUTORÍA PARA PODER RESOLVER DUDAS SOBRE TEMAS QUE NO SE TENÍAN PARA NADA CLAROS AL NO HABER PODIDO SEGUIR EL RITMO POR UN LEVE RETRASO
+// EN EL PROYECTO.
+// FINALMENTE, Y TRAS SEGUIR LAS RECOMENDACIONES DE LA PROFESORA, SE CONSULTARON LAS DOS PAGINAS WEB QUE CONSTABAN COMO BIBLIOGRAFIA EN EL PDF DE LA PRACTICA OPCIONAL
+// ESTOS LINKS SON: "EN.WIKIPEDIA.ORG/WIKI/CUBE_MAPPING" Y "KHRONOS.ORG/OPENGL/WIKI/CUBEMAP_TEXTURE"
+
+
+
 uniform int active_lights_n; // Number of active lights (< MG_MAX_LIGHT)
 uniform vec3 scene_ambient; // Scene ambient light
 
@@ -188,7 +198,7 @@ void main() {
 
 
 	texColor = texture2D(texture0, f_texCoord);
-	vec4 mezcla = mix(texColor, texel, 0.8);
+	vec4 mezcla = mix(texColor, texel, 0.8); // Hacemos la mezcla de texturas
 
 	gl_FragColor = vec4(scene_ambient + color_difuso, 1.0) * mezcla + vec4(color_especular, theMaterial.alpha); //color * textura
 }
